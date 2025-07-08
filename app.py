@@ -2,6 +2,7 @@ import streamlit as st
 import joblib
 import pandas as pd
 from datetime import datetime
+import pytz
 
 # --- Load model dan komponen ---
 model = joblib.load('RidgeClassifier - Ukulele by Yousician.pkl')
@@ -24,12 +25,16 @@ if input_mode == "📝 Input Manual":
     name = st.text_input("👤 Nama Pengguna:")
     star_rating = st.selectbox("⭐ Bintang Rating:", [1, 2, 3, 4, 5])
     user_review = st.text_area("💬 Review:")
-    
-    # Gunakan date_input dan time_input karena datetime_input belum tersedia
+
+    # Input tanggal dan waktu terpisah
     review_day = st.date_input("📅 Tanggal Submit:", value=datetime.today())
     review_time = st.time_input("⏰ Waktu Submit:", value=datetime.now().time())
+
+    # Gabungkan dan ubah ke zona Asia/Jakarta (WIB)
+    local_tz = pytz.timezone("Asia/Jakarta")
     review_datetime = datetime.combine(review_day, review_time)
-    review_date_str = review_datetime.strftime("%Y-%m-%d %H:%M")
+    review_datetime_wib = local_tz.localize(review_datetime)
+    review_date_str = review_datetime_wib.strftime("%Y-%m-%d %H:%M")
 
     if st.button("Prediksi Sentimen"):
         if user_review.strip() == "":
