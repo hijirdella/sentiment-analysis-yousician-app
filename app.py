@@ -26,14 +26,16 @@ if input_mode == "📝 Input Manual":
     star_rating = st.selectbox("⭐ Bintang Rating:", [1, 2, 3, 4, 5])
     user_review = st.text_area("💬 Review:")
 
-    # Input tanggal dan waktu terpisah
-    review_day = st.date_input("📅 Tanggal Submit:", value=datetime.today())
-    review_time = st.time_input("⏰ Waktu Submit:", value=datetime.now().time())
+    # Gunakan waktu default dalam zona Asia/Jakarta
+    wib = pytz.timezone("Asia/Jakarta")
+    now_wib = datetime.now(wib)
 
-    # Gabungkan dan ubah ke zona Asia/Jakarta (WIB)
-    local_tz = pytz.timezone("Asia/Jakarta")
+    review_day = st.date_input("📅 Tanggal Submit:", value=now_wib.date())
+    review_time = st.time_input("⏰ Waktu Submit:", value=now_wib.time())
+
+    # Gabungkan tanggal dan waktu (tanpa menggeser waktu)
     review_datetime = datetime.combine(review_day, review_time)
-    review_datetime_wib = local_tz.localize(review_datetime)
+    review_datetime_wib = wib.localize(review_datetime)
     review_date_str = review_datetime_wib.strftime("%Y-%m-%d %H:%M")
 
     if st.button("Prediksi Sentimen"):
