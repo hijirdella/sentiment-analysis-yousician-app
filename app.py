@@ -20,12 +20,16 @@ input_mode = st.radio("Mode Input:", ["📝 Input Manual", "📁 Upload CSV"])
 # ========================================
 if input_mode == "📝 Input Manual":
     st.subheader("Masukkan 1 Review Pengguna")
-    
+
     name = st.text_input("👤 Nama Pengguna:")
     star_rating = st.selectbox("⭐ Bintang Rating:", [1, 2, 3, 4, 5])
     user_review = st.text_area("💬 Review:")
-    review_date = st.datetime_input("🗓️ Tanggal & Waktu Submit:", value=datetime.now())
-    review_date_str = review_date.strftime("%Y-%m-%d %H:%M")
+    
+    # Gunakan date_input dan time_input karena datetime_input belum tersedia
+    review_day = st.date_input("📅 Tanggal Submit:", value=datetime.today())
+    review_time = st.time_input("⏰ Waktu Submit:", value=datetime.now().time())
+    review_datetime = datetime.combine(review_day, review_time)
+    review_date_str = review_datetime.strftime("%Y-%m-%d %H:%M")
 
     if st.button("Prediksi Sentimen"):
         if user_review.strip() == "":
