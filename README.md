@@ -1,2 +1,2 @@
-🎵 **Sentiment Analysis – Learn Uke Kala App**
-Text classification project to analyze user reviews from the *Learn Uke Kala* app using TF-IDF and machine learning models. 
+🎵 Sentiment Analysis – Ukulele by Yousician App
+Text classification project to analyze user reviews from the Ukulele by Yousician app using TF-IDF and machine learning models.
