@@ -15,6 +15,7 @@ label_map = {'positive': 'Positif', 'negative': 'Negatif'}
 color_map = {'Positif': 'blue', 'Negatif': 'red'}
 
 # === Judul Aplikasi ===
+st.set_page_config(page_title="🎵 Aplikasi Analisis Sentimen", layout="centered")
 st.title("🎵 Aplikasi Analisis Sentimen – Ukulele by Yousician")
 
 # === Pilih Mode Input ===
@@ -59,7 +60,7 @@ if input_mode == "📝 Input Manual":
             }])
 
             st.success(f"✅ Sentimen terdeteksi: **{label_map[label]}**")
-            st.dataframe(result_df, use_container_width=True, height=200)
+            st.dataframe(result_df, use_container_width=True)
 
             csv_manual = result_df.to_csv(index=False).encode('utf-8')
             st.download_button(
@@ -126,7 +127,7 @@ else:
                 bar_data.columns = ['Sentimen', 'Jumlah']
                 colors = [color_map.get(sent, 'gray') for sent in bar_data['Sentimen']]
 
-                fig_bar, ax_bar = plt.subplots()
+                fig_bar, ax_bar = plt.subplots(figsize=(6, 4))
                 bars = ax_bar.bar(bar_data['Sentimen'], bar_data['Jumlah'], color=colors)
 
                 for bar in bars:
@@ -134,6 +135,8 @@ else:
                     ax_bar.text(bar.get_x() + bar.get_width() / 2, height + 0.5, f'{int(height)}',
                                 ha='center', va='bottom', fontsize=10)
 
+                max_count = bar_data['Jumlah'].max()
+                ax_bar.set_ylim(0, max_count * 1.25)  # ruang ekstra agar label tidak terpotong
                 ax_bar.set_ylabel("Jumlah")
                 ax_bar.set_xlabel("Sentimen")
                 ax_bar.set_title("Distribusi Sentimen Pengguna – Ukulele by Yousician")
@@ -154,7 +157,8 @@ else:
                     labels=pie_data.index,
                     colors=pie_colors,
                     autopct=lambda pct: autopct_format(pct, pie_data),
-                    startangle=90
+                    startangle=90,
+                    textprops={'fontsize': 10}
                 )
                 ax_pie.axis('equal')
                 st.pyplot(fig_pie)
