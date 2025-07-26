@@ -14,7 +14,7 @@ label_encoder = joblib.load('label_encoder_Ukulele by Yousician.pkl')
 label_map = {'positive': 'Positif', 'negative': 'Negatif'}
 color_map = {'Positif': 'blue', 'Negatif': 'red'}
 
-# === Judul Aplikasi ===
+# === Konfigurasi Halaman ===
 st.set_page_config(page_title="🎵 Aplikasi Analisis Sentimen", layout="centered")
 st.title("🎵 Aplikasi Analisis Sentimen – Ukulele by Yousician")
 
@@ -22,7 +22,7 @@ st.title("🎵 Aplikasi Analisis Sentimen – Ukulele by Yousician")
 st.header("📌 Pilih Metode Input")
 input_mode = st.radio("Pilih salah satu:", ["📝 Input Manual", "📁 Upload File CSV"])
 
-# === Zona waktu WIB ===
+# === Zona Waktu WIB ===
 wib = pytz.timezone("Asia/Jakarta")
 now_wib = datetime.now(wib)
 
@@ -45,7 +45,7 @@ if input_mode == "📝 Input Manual":
 
     if st.button("🚀 Prediksi Sentimen"):
         if user_review.strip() == "":
-            st.warning("⚠️ Silakan isi review terlebih dahulu.")
+            st.warning("Silakan isi review terlebih dahulu.")
         else:
             vec = vectorizer.transform([user_review])
             pred = model.predict(vec)
@@ -59,7 +59,7 @@ if input_mode == "📝 Input Manual":
                 "predicted_sentiment": label
             }])
 
-            st.success(f"✅ Sentimen terdeteksi: **{label_map[label]}**")
+            st.success(f"Sentimen terdeteksi: **{label_map[label]}**")
             st.dataframe(result_df, use_container_width=True)
 
             csv_manual = result_df.to_csv(index=False).encode('utf-8')
@@ -87,14 +87,14 @@ else:
 
             required_cols = {'name', 'star_rating', 'date', 'review'}
             if not required_cols.issubset(df.columns):
-                st.error(f"❌ File harus memiliki kolom: {', '.join(required_cols)}.")
+                st.error(f"File harus memiliki kolom: {', '.join(required_cols)}.")
             else:
                 df['review'] = df['review'].fillna("")
                 X_vec = vectorizer.transform(df['review'])
                 y_pred = model.predict(X_vec)
                 df['predicted_sentiment'] = label_encoder.inverse_transform(y_pred)
 
-                st.success("✅ Prediksi berhasil!")
+                st.success("Prediksi berhasil!")
 
                 # === Filter Tanggal ===
                 min_date = df['date'].min().date()
@@ -120,7 +120,7 @@ else:
                     height=400
                 )
 
-                # === Bar Chart ===
+                # === Grafik Batang ===
                 st.subheader("📊 Distribusi Sentimen – Diagram Batang")
                 sentimen_bahasa = filtered_df['predicted_sentiment'].map(label_map)
                 bar_data = sentimen_bahasa.value_counts().reset_index()
@@ -132,11 +132,14 @@ else:
 
                 for bar in bars:
                     height = bar.get_height()
-                    ax_bar.text(bar.get_x() + bar.get_width() / 2, height + 0.5, f'{int(height)}',
-                                ha='center', va='bottom', fontsize=10)
+                    ax_bar.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        height + 0.5,
+                        f"{int(height):,}".replace(",", "."),
+                        ha='center', va='bottom', fontsize=10
+                    )
 
-                max_count = bar_data['Jumlah'].max()
-                ax_bar.set_ylim(0, max_count * 1.25)  # ruang ekstra agar label tidak terpotong
+                ax_bar.set_ylim(0, bar_data['Jumlah'].max() * 1.25)
                 ax_bar.set_ylabel("Jumlah")
                 ax_bar.set_xlabel("Sentimen")
                 ax_bar.set_title("Distribusi Sentimen Pengguna – Ukulele by Yousician")
@@ -149,7 +152,7 @@ else:
 
                 def autopct_format(pct, allvals):
                     absolute = int(round(pct / 100. * sum(allvals)))
-                    return f"{pct:.1f}%\n({absolute})"
+                    return f"{pct:.1f}%\n({absolute:,})".replace(",", ".")
 
                 fig_pie, ax_pie = plt.subplots()
                 ax_pie.pie(
@@ -173,4 +176,4 @@ else:
                 )
 
         except Exception as e:
-            st.error(f"❌ Terjadi kesalahan saat membaca file: {e}")
+            st.error(f"Terjadi kesalahan saat membaca file: {e}")
